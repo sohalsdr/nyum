@@ -16,7 +16,7 @@ Below the screenshots, you'll find some notes on [setting this tool up](#setup),
 
 ### Initial Setup
 
-Initial setup is pretty simple. The only dependency is [pandoc](https://pandoc.org) version >2.8. From there, the only things that need to be done are to fork/clone this repository, potentially clear out the `recipes/` and `docs/` directories to clear out the demo data, and go through `config.yaml` to configure the necessary settings.
+Initial setup is pretty simple. The only dependency is [Pandoc](https://pandoc.org) version >2.8 (as well as [Python 3](https://www.python.org/) if you want to use `make test`). From there, the only things that need to be done are to fork/clone this repository, potentially clear out the `recipes/` and `docs/` directories to clear out the demo data, and go through `config.yaml` to configure the necessary settings.
 
 To get it deployed on GitHub Pages, the best approach is to simply configure GitHub Pages to deploy from the `docs/` folder, which the script deploys to expressly because GitHub artificially limits Pages to only be able to deploy from the root of a repository or the `docs/` folder.
 
@@ -26,8 +26,7 @@ A general sample workflow for adding a new recipe would go as follows:
 
 1. `git pull` to ensure your local copy is up to date and there's no merge conflicts.
 2. Write your recipe in `recipes/` based on the formatting instructions below. Add any pictures to the same folder, with sensible filenames of course.
-3. Build the site with `bash build.sh`.
-4. Ensure everything looks correct by navigating to the `docs/` folder, then running a HTTP server to see what everything looks like (this can be done with Python using `python -m http.server`).
+3. Build the site with `make build`, or test it with `make test` (which also builds the site, but runs an HTTP server to easily see what it looks like).
 5. Commit and push the site, then wait a minute or two for GitHub Pages to reflect the changes!
 
 ### Formatting
@@ -134,4 +133,4 @@ However, the subdirectory `assets/tabler-icons` contains **third-party software 
 
 Finally, some **shoutouts** that aren't *really* licensing-related, but fit better here than anywhere else in this document:
 
-The favicon was generated with [Emblem](https://apps.gnome.org/app/org.gnome.design.Emblem/), and the symbolic icon used is from [Adwaita](https://developer.gnome.org/hig/guidelines/ui-icons.html).
+The favicon was generated with [Emblem](https://apps.gnome.org/app/org.gnome.design.Emblem/), and the symbolic icon used is from the same [Tabler icons](https://tabler-icons.io) used throughout the UI.
