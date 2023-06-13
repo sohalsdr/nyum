@@ -4,13 +4,11 @@
 
 <img src="assets/favicon.png" align="right" width="96">
 
-This tool takes a **collection of Markdown-formatted recipes** and turns it into a **lightweight, responsive, searchable website** for your personal use as a reference while cooking, or for sharing with family and friends. It's *not* intended as a cooking blog framework – there's no RSS feed, no social sharing buttons, and absolutely zero SEO.
+This tool takes a **collection of Markdown-formatted recipes** and turns it into a **lightweight, responsive, searchable website** for your personal use as a reference while cooking, or for sharing with family and friends. It's *not* intended as a cooking blog framework – there's no RSS feed, no social sharing buttons, and absolutely zero SEO. View the demo site [here](https://sohalsdr.github.io/nyum).
 
 📓 Think of it as a **cookbook for nerds**.
 
-Below the screenshots, you'll find some notes on [setting this tool up](#setup), [running it](#building), [formatting your recipes](#formatting), and [deploying the generated site](#deployment).
-
-**Fork Notes: This fork is primarily intended for my personal use, and as a result has some changes and stuff trimmed off from the original. This includes rsync deployment and GitHub Actions code, as well as parts of the README. This fork also strips out all webfonts, and changes other included assets to be lighter and come closer to the principles outlined [here](https://referi.ineedmore.coffee). You're likely better served by the original project in [this repository](https://github.com/doersino/nyum). For more information on this fork, check out [the blog post about it](https://ineedmore.coffee/future-link).**
+**Fork Notes:** This fork is primarily intended for my personal use, and as a result has some changes and stuff trimmed off from the original. This includes rsync deployment and GitHub Actions code, as well as parts of the README. This fork also strips out all webfonts, and changes other included assets to be lighter and come closer to the principles outlined [here](https://referi.ineedmore.coffee). You're likely better served by the original project in [this repository](https://github.com/doersino/nyum). For more information on this fork, check out [the blog post about it](https://ineedmore.coffee/future-link).
 
 ## Usage
 
