@@ -15,8 +15,7 @@
     --horizontal-rule: #ddd;
     --footer: #bbb;
 
-    --sans: Barlow, Fabrikat, Helvetica, sans-serif;
-    --serif: Lora, Georgia, serif;
+    --sans: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
     --images-on-index-size: 5em;
 
@@ -153,7 +152,7 @@ header ul li a {
 header p {
     max-width: 66%;
     margin: 0.5rem 0;
-    font-family: var(--serif);
+    font-family: var(--sans);
 }
 header .nutrition {
     padding-bottom: 0.5em;
@@ -326,7 +325,7 @@ h3 .icons img {
 }
 h3 + p {
     margin-top: -0.5rem;  /* move the description a bit closer to the recipe's title */
-    font-family: var(--serif);
+    font-family: var(--sans);
 }
 h3 + h3 {
     margin-top: -0.5rem;  /* in the same vein, move the recipe title below a description-less recipe a bit upwards */
@@ -408,7 +407,7 @@ code {
     font-family: var(--sans);
 }
 blockquote {
-    font-family: var(--serif);
+    font-family: var(--sans);
 }
 blockquote img {
     max-width: 100%;
