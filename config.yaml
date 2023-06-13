@@ -35,10 +35,4 @@ strings:
 # page, referring you to the corresponding Markdown file on GitHub. If you've
 # got some sort of continous integration (like the included GitHub Action) set
 # up, this effectively turns your site into a wiki.
-github_url: https://github.com/doersino/nyum
-
-# Remote for deployment – the value of this setting will be passed to rsync as a
-# destination, so you probably want it to look like USER@SERVER:PATH. Make sure
-# it's correct – the path in particular – since otherwise stuff that shouldn't
-# be deleted or overwritten might indeed be deleted or overwritten!
-deploy_remote:
+github_url: https://github.com/sohalsdr/nyum

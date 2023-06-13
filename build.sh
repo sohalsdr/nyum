@@ -17,7 +17,7 @@ while [[ $# -gt 0 ]]; do
         shift
     elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
         echo "Usage: bash build.sh [-q | --quiet] [-c | --clean]"
-        echo "  Builds the site. If the -c flag is given, stops after resetting _site/ and _temp/."
+        echo "  Builds the site. If the -c flag is given, stops after resetting docs/ and temp/."
         exit
     else
         shift
@@ -39,90 +39,80 @@ function x {
     "$@"
 }
 
-status "Resetting _site/ and _temp/..."
+status "Resetting docs/ and temp/..."
 # (...with a twist, just to make sure this doesn't throw an error the first time)
-x mkdir -p _site/
-x touch _site/dummy.txt
-x rm -r _site/
-x mkdir -p _site/
-x mkdir -p _temp/
-x touch _temp/dummy.txt
-x rm -r _temp/
-x mkdir -p _temp/
+x mkdir -p docs/
+x touch docs/dummy.txt
+x rm -r docs/
+x mkdir -p docs/
+x mkdir -p temp/
+x touch temp/dummy.txt
+x rm -r temp/
+x mkdir -p temp/
 
 $CLEAN && exit
 
 status "Copying assets..."
-x cp -r _assets/ _site/assets/
+x cp -r assets/ docs/assets/
 
 status "Copying static files..."
-for FILE in _recipes/*; do
+for FILE in recipes/*; do
     [[ "$FILE" == *.md ]] && continue
-    x cp "$FILE" _site/
+    x cp "$FILE" docs/
 done
 
 status "Extracting metadata..."
-for FILE in _recipes/*.md; do
+for FILE in recipes/*.md; do
     # extract category name for each recipe, set basename to avoid having to
     # use $sourcefile$ in the template which pandoc sets automatically but
     # contains the relative path
     x pandoc "$FILE" \
         --metadata-file config.yaml \
         --metadata basename="$(basename "$FILE" .md)" \
-        --template _templates/technical/category.template.txt \
-        -t html -o "_temp/$(basename "$FILE" .md).category.txt"
+        --template templates/technical/category.template.txt \
+        -t html -o "temp/$(basename "$FILE" .md).category.txt"
 
     # extract metadata, set htmlfile in order to link to it on the index page
     x pandoc "$FILE" \
         --metadata htmlfile="$(basename "$FILE" .md).html" \
-        --template _templates/technical/metadata.template.json \
-        -t html -o "_temp/$(basename "$FILE" .md).metadata.json"
+        --template templates/technical/metadata.template.json \
+        -t html -o "temp/$(basename "$FILE" .md).metadata.json"
 done
 
 status "Grouping metadata by category..."  # (yep, this is a right mess)
-echo "{\"categories\": [" > _temp/index.json
+echo "{\"categories\": [" > temp/index.json
 SEPARATOR_OUTER=""  # no comma before first list element (categories)
 SEPARATOR_INNER=""  # ditto (recipes per category)
 IFS=$'\n'           # tell for loop logic to split on newlines only, not spaces
-CATS="$(cat _temp/*.category.txt)"
+CATS="$(cat temp/*.category.txt)"
 for CATEGORY in $(echo "$CATS" | cut -d" " -f2- | sort | uniq); do
-    printf '%s' "$SEPARATOR_OUTER" >> _temp/index.json
-    CATEGORY_FAUX_URLENCODED="$(echo "$CATEGORY" | awk -f "_templates/technical/faux_urlencode.awk")"
+    printf '%s' "$SEPARATOR_OUTER" >> temp/index.json
+    CATEGORY_FAUX_URLENCODED="$(echo "$CATEGORY" | awk -f "templates/technical/faux_urlencode.awk")"
 
     # some explanation on the next line and similar ones: this uses `tee -a`
     # instead of `>>` to append to two files instead of one, but since we don't
     # actually want to see the output, pipe that to /dev/null
-    x printf '%s' "{\"category\": \"$CATEGORY\", \"category_faux_urlencoded\": \"$CATEGORY_FAUX_URLENCODED\", \"recipes\": [" | tee -a "_temp/index.json" "_temp/$CATEGORY_FAUX_URLENCODED.category.json" >/dev/null
+    x printf '%s' "{\"category\": \"$CATEGORY\", \"category_faux_urlencoded\": \"$CATEGORY_FAUX_URLENCODED\", \"recipes\": [" | tee -a "temp/index.json" "temp/$CATEGORY_FAUX_URLENCODED.category.json" >/dev/null
     for C in $CATS; do
         BASENAME=$(echo "$C" | cut -d" " -f1)
         C_CAT=$(echo "$C" | cut -d" " -f2-)
         if [[ "$C_CAT" == "$CATEGORY" ]]; then
-            printf '%s' "$SEPARATOR_INNER" | tee -a "_temp/index.json" "_temp/$CATEGORY_FAUX_URLENCODED.category.json" >/dev/null
-            x cat "_temp/$BASENAME.metadata.json" | tee -a "_temp/index.json" "_temp/$CATEGORY_FAUX_URLENCODED.category.json" >/dev/null
+            printf '%s' "$SEPARATOR_INNER" | tee -a "temp/index.json" "temp/$CATEGORY_FAUX_URLENCODED.category.json" >/dev/null
+            x cat "temp/$BASENAME.metadata.json" | tee -a "temp/index.json" "temp/$CATEGORY_FAUX_URLENCODED.category.json" >/dev/null
             SEPARATOR_INNER=","
         fi
     done
-    x printf "]}\n" | tee -a "_temp/index.json" "_temp/$CATEGORY_FAUX_URLENCODED.category.json" >/dev/null
+    x printf "]}\n" | tee -a "temp/index.json" "temp/$CATEGORY_FAUX_URLENCODED.category.json" >/dev/null
     SEPARATOR_OUTER=","
     SEPARATOR_INNER=""
 done
 unset IFS
-echo "]}" >> _temp/index.json
+echo "]}" >> temp/index.json
 
 status "Building recipe pages..."
-for FILE in _recipes/*.md; do
-    CATEGORY_FAUX_URLENCODED="$(cat "_temp/$(basename "$FILE" .md).category.txt" | cut -d" " -f2- | awk -f "_templates/technical/faux_urlencode.awk")"
-
-    # when running under GitHub Actions, all file modification dates are set to
-    # the date of the checkout (i.e., the date on which the workflow was
-    # executed), so in that case, use the most recent commit date of each recipe
-    # as its update date – you'll probably also want to set the TZ environment
-    # variable to your local timezone in the workflow file (#21)
-    if [[ "$GITHUB_ACTIONS" = true ]]; then
-        UPDATED_AT="$(git log -1 --date=short-local --pretty='format:%cd' "$FILE")"
-    else
-        UPDATED_AT="$(date -r "$FILE" "+%Y-%m-%d")"
-    fi
+for FILE in recipes/*.md; do
+    CATEGORY_FAUX_URLENCODED="$(cat "temp/$(basename "$FILE" .md).category.txt" | cut -d" " -f2- | awk -f "templates/technical/faux_urlencode.awk")"
+    UPDATED_AT="$(date -r "$FILE" "+%Y-%m-%d")"
 
     # set basename to enable linking to github in the footer, and set
     # category_faux_urlencoded in order to link to that in the header
@@ -131,40 +121,40 @@ for FILE in _recipes/*.md; do
         --metadata basename="$(basename "$FILE" .md)" \
         --metadata category_faux_urlencoded="$CATEGORY_FAUX_URLENCODED" \
         --metadata updatedtime="$UPDATED_AT" \
-        --template _templates/recipe.template.html \
-        -o "_site/$(basename "$FILE" .md).html"
+        --template templates/recipe.template.html \
+        -o "docs/$(basename "$FILE" .md).html"
 done
 
 status "Building category pages..."
-for FILE in _temp/*.category.json; do
-    x pandoc _templates/technical/empty.md \
+for FILE in temp/*.category.json; do
+    x pandoc templates/technical/empty.md \
         --metadata-file config.yaml \
         --metadata title="dummy" \
         --metadata updatedtime="$(date "+%Y-%m-%d")" \
         --metadata-file "$FILE" \
-        --template _templates/category.template.html \
-        -o "_site/$(basename "$FILE" .category.json).html"
+        --template templates/category.template.html \
+        -o "docs/$(basename "$FILE" .category.json).html"
 done
 
 status "Building index page..."
-x pandoc _templates/technical/empty.md \
+x pandoc templates/technical/empty.md \
     --metadata-file config.yaml \
     --metadata title="dummy" \
     --metadata updatedtime="$(date "+%Y-%m-%d")" \
-    --metadata-file _temp/index.json \
-    --template _templates/index.template.html \
-    -o _site/index.html
+    --metadata-file temp/index.json \
+    --template templates/index.template.html \
+    -o docs/index.html
 
 status "Assembling search index..."
-echo "[" > _temp/search.json
+echo "[" > temp/search.json
 SEPARATOR=""
-for FILE in _temp/*.metadata.json; do
-    printf '%s' "$SEPARATOR" >> _temp/search.json
-    x cat "$FILE" >> _temp/search.json
+for FILE in temp/*.metadata.json; do
+    printf '%s' "$SEPARATOR" >> temp/search.json
+    x cat "$FILE" >> temp/search.json
     SEPARATOR=","
 done
-echo "]" >> _temp/search.json
-x cp -r _temp/search.json _site/
+echo "]" >> temp/search.json
+x cp -r temp/search.json docs/
 
 TIME_END=$(date +%s)
 TIME_TOTAL=$((TIME_END-TIME_START))
