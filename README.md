@@ -8,7 +8,7 @@ This tool takes a **collection of Markdown-formatted recipes** and turns it into
 
 📓 Think of it as a **cookbook for nerds**.
 
-**Fork Notes:** This fork is primarily intended for my personal use, and as a result has some changes and stuff trimmed off from the original. This includes rsync deployment and GitHub Actions code, as well as parts of the README. This fork also strips out all webfonts, and changes other included assets to be lighter and come closer to the principles outlined [here](https://referi.ineedmore.coffee). You're likely better served by the original project in [this repository](https://github.com/doersino/nyum). For more information on this fork, check out [the blog post about it](https://ineedmore.coffee/future-link).
+**Fork Notes:** This fork is primarily intended for my personal use, and as a result has some changes and stuff trimmed off from the original. This includes rsync deployment and GitHub Actions code, as well as parts of the README. This fork also strips out all webfonts, and changes other included assets to be lighter and come closer to the principles outlined [here](https://referi.ineedmore.coffee). You're likely better served by the original project in [this repository](https://github.com/doersino/nyum). For more information on this fork, check out [the blog post about it](https://ineedmore.coffee/trimming-nyum).
 
 ## Usage
 
